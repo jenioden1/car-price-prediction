@@ -1,5 +1,6 @@
-flask
-scikit-learn>=1.7.2
+streamlit>=1.36
+scikit-learn>=1.4
 pandas
 numpy
 joblib
+jinja2
