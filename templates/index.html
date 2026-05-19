@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CarPrice AI — Prediksi Harga Mobil</title>
+    <meta name="description" content="Aplikasi prediksi harga mobil berbasis machine learning dengan estimasi real-time." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Animation libraries -->
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale.css" />
+
+    <style>
+        :root {
+            --navy-950: #060d2c;
+            --navy-900: #0a1545;
+            --navy-800: #131f5e;
+            --navy-700: #1a237e;
+            --navy-600: #283593;
+            --navy-500: #3949ab;
+            --navy-400: #5c6bc0;
+            --indigo-300: #7986cb;
+            --indigo-200: #9fa8da;
+            --indigo-100: #c5cae9;
+            --indigo-50: #e8eaf6;
+            --bg: #f5f7ff;
+            --bg-soft: #eef1fb;
+            --surface: #ffffff;
+            --text: #0f1531;
+            --text-muted: #5b6391;
+            --text-soft: #8c93b8;
+            --border: #e1e5f5;
+            --success: #16a34a;
+            --warning: #f59e0b;
+            --danger-bg: #fef2f2;
+            --danger-fg: #b91c1c;
+            --shadow-sm: 0 2px 8px rgba(15, 21, 49, 0.06);
+            --shadow-md: 0 12px 28px rgba(15, 21, 49, 0.10);
+            --shadow-lg: 0 30px 70px rgba(10, 21, 69, 0.22);
+            --shadow-glow: 0 0 0 4px rgba(57, 73, 171, 0.14);
+            --radius-sm: 10px;
+            --radius: 14px;
+            --radius-lg: 20px;
+            --transition: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg: #070b1f;
+            --bg-soft: #0f1638;
+            --surface: #141b40;
+            --text: #f1f4ff;
+            --text-muted: #c1c8ee;
+            --text-soft: #8d95c1;
+            --border: #2a3470;
+            --indigo-50: #1f2858;
+            --indigo-100: #2a3470;
+            --indigo-200: #4756a6;
+            --indigo-300: #7986cb;
+            --shadow-sm: 0 2px 10px rgba(0,0,0,0.45);
+            --shadow-md: 0 12px 32px rgba(0,0,0,0.55);
+            --shadow-lg: 0 30px 70px rgba(0,0,0,0.65);
+            --shadow-glow: 0 0 0 4px rgba(121, 134, 203, 0.25);
+            --danger-bg: #3b1418;
+            --danger-fg: #fca5a5;
+        }
+
+        /* ===== Dark mode component overrides ===== */
+        [data-theme="dark"] .info-icon {
+            background: var(--indigo-100);
+            color: var(--indigo-200);
+        }
+        [data-theme="dark"] .info-icon:hover {
+            background: var(--indigo-300);
+            color: var(--navy-950);
+        }
+        [data-theme="dark"] .unit-badge {
+            background: var(--indigo-100);
+            color: #c7d2fe;
+        }
+        [data-theme="dark"] .summary-table td:last-child {
+            color: var(--text);
+        }
+        [data-theme="dark"] .progress-bar {
+            background: var(--indigo-100);
+        }
+        [data-theme="dark"] .quick-fill {
+            background: var(--surface);
+            color: #c7d2fe;
+            border-color: var(--border);
+        }
+        [data-theme="dark"] .quick-fill:hover {
+            background: var(--navy-500);
+            color: white;
+            border-color: var(--navy-500);
+        }
+        [data-theme="dark"] .form-group input,
+        [data-theme="dark"] .form-group select {
+            background: var(--bg-soft);
+            color: var(--text);
+            border-color: var(--border);
+        }
+        [data-theme="dark"] .form-group input::placeholder {
+            color: #6e76a3;
+        }
+        [data-theme="dark"] .form-group input:hover,
+        [data-theme="dark"] .form-group select:hover {
+            background: var(--surface);
+            border-color: var(--indigo-200);
+        }
+        [data-theme="dark"] .form-group input:focus,
+        [data-theme="dark"] .form-group select:focus {
+            background: var(--surface);
+            border-color: var(--indigo-300);
+        }
+        [data-theme="dark"] .range-input {
+            background: var(--indigo-100);
+        }
+        [data-theme="dark"] .range-input::-webkit-slider-thumb {
+            background: var(--surface);
+            border-color: var(--indigo-300);
+        }
+        [data-theme="dark"] .range-input::-moz-range-thumb {
+            background: var(--surface);
+            border-color: var(--indigo-300);
+        }
+        [data-theme="dark"] .empty-state {
+            background: linear-gradient(180deg, var(--bg-soft), var(--surface));
+            border-color: var(--indigo-100);
+            color: var(--text-muted);
+        }
+        [data-theme="dark"] .empty-state h3 { color: var(--text); }
+        [data-theme="dark"] .empty-illu {
+            background: linear-gradient(135deg, var(--indigo-100), var(--indigo-200));
+            color: #e8ecff;
+        }
+        [data-theme="dark"] .empty-illu::after {
+            border-color: var(--indigo-200);
+        }
+        [data-theme="dark"] .credit {
+            background: linear-gradient(135deg, #1c2554, #2a3470);
+            border-left-color: var(--indigo-300);
+        }
+        [data-theme="dark"] .credit-meta .credit-title { color: #c7d2fe; }
+        [data-theme="dark"] .credit-meta .credit-name  { color: #ffffff; }
+        [data-theme="dark"] .credit-meta .credit-nim   { color: #a3aad6; }
+        [data-theme="dark"] .summary-table {
+            background: var(--surface);
+            border-color: var(--border);
+        }
+        [data-theme="dark"] .summary-table tr:hover { background: var(--bg-soft); }
+        [data-theme="dark"] .summary-table td:first-child { color: var(--text-muted); }
+        [data-theme="dark"] .summary-title { color: #c7d2fe; }
+        [data-theme="dark"] .error-box {
+            background: var(--danger-bg);
+            color: var(--danger-fg);
+            border-left-color: var(--danger-fg);
+        }
+        [data-theme="dark"] .toast {
+            background: var(--surface);
+            color: var(--text);
+        }
+        [data-theme="dark"] .progress-row {
+            background: linear-gradient(135deg, var(--bg-soft), var(--surface));
+            border-color: var(--border);
+        }
+        [data-theme="dark"] .progress-label { color: var(--text-muted); }
+        [data-theme="dark"] .icon-btn {
+            background: var(--surface);
+            border-color: var(--border);
+            color: var(--text-muted);
+        }
+        [data-theme="dark"] .icon-btn:hover {
+            color: #c7d2fe;
+            background: var(--bg-soft);
+        }
+        [data-theme="dark"] .btn-ghost {
+            background: var(--bg-soft);
+            color: var(--text-muted);
+            border-color: var(--border);
+        }
+        [data-theme="dark"] .btn-ghost:hover {
+            background: var(--indigo-100);
+            color: #ffffff;
+        }
+        [data-theme="dark"] .card h2 { color: var(--text); }
+        [data-theme="dark"] .form-group label { color: var(--text); }
+        [data-theme="dark"] .label-text { color: var(--text); }
+
+        /* Tippy theme override for dark mode readability */
+        [data-theme="dark"] .tippy-box[data-theme~='light-border'] {
+            background-color: #1c2554;
+            color: #f1f4ff;
+            border: 1px solid #3a4793;
+        }
+        [data-theme="dark"] .tippy-box[data-theme~='light-border'] .tippy-arrow {
+            color: #1c2554;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        ::selection { background: rgba(57, 73, 171, 0.25); color: inherit; }
+
+        /* ===== NAVBAR ===== */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: saturate(180%) blur(14px);
+            -webkit-backdrop-filter: saturate(180%) blur(14px);
+            border-bottom: 1px solid rgba(225, 229, 245, 0.6);
+        }
+        [data-theme="dark"] .nav {
+            background: rgba(7, 11, 31, 0.7);
+            border-bottom-color: rgba(36, 48, 104, 0.6);
+        }
+        .nav-inner {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text);
+            text-decoration: none;
+            letter-spacing: -0.01em;
+        }
+        .logo-mark {
+            width: 32px; height: 32px;
+            border-radius: 9px;
+            background: linear-gradient(135deg, var(--navy-700), var(--navy-500));
+            display: grid; place-items: center;
+            color: white;
+            font-size: 16px;
+            box-shadow: 0 6px 16px rgba(26,35,126,0.35);
+        }
+        .nav-actions { display: flex; align-items: center; gap: 10px; }
+        .icon-btn {
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-muted);
+            cursor: pointer;
+            display: grid; place-items: center;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+        .icon-btn:hover {
+            color: var(--navy-700);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            position: relative;
+            background:
+                radial-gradient(1200px 500px at 15% -10%, rgba(121,134,203,0.55), transparent 60%),
+                radial-gradient(900px 500px at 95% 10%, rgba(57,73,171,0.7), transparent 60%),
+                linear-gradient(135deg, var(--navy-950) 0%, var(--navy-800) 60%, var(--navy-600) 100%);
+            color: white;
+            padding: 64px 24px 130px;
+            overflow: hidden;
+            isolation: isolate;
+        }
+        #tsparticles {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            opacity: 0.85;
+        }
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 44px 44px;
+            mask-image: radial-gradient(circle at 50% 30%, black, transparent 70%);
+            -webkit-mask-image: radial-gradient(circle at 50% 30%, black, transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        .hero-inner { max-width: 1240px; margin: 0 auto; position: relative; }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 14px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 999px;
+            font-size: 12.5px;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            margin-bottom: 22px;
+        }
+        .brand-dot {
+            width: 7px; height: 7px;
+            background: #4ade80;
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(74,222,128,0.6);
+            animation: pulse 2s infinite;
+        }
+
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(30px, 4.6vw, 52px);
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            line-height: 1.1;
+            max-width: 880px;
+        }
+        .hero h1 .accent {
+            background: linear-gradient(90deg, #c7d2fe, #ffffff 55%, #a5b4fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .hero p.subtitle {
+            margin-top: 16px;
+            max-width: 700px;
+            font-size: 17px;
+            color: rgba(255,255,255,0.82);
+        }
+
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 28px;
+        }
+        .stat-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.16);
+            backdrop-filter: blur(8px);
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        .stat-pill:hover {
+            background: rgba(255,255,255,0.16);
+            transform: translateY(-2px);
+        }
+
+        /* ===== MAIN ===== */
+        .main {
+            max-width: 1240px;
+            margin: -90px auto 60px;
+            padding: 0 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            transition: background var(--transition), border-color var(--transition);
+        }
+        .card.right { position: sticky; top: 84px; }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+        .card-icon {
+            width: 42px; height: 42px;
+            border-radius: 12px;
+            display: grid; place-items: center;
+            background: linear-gradient(135deg, var(--navy-700), var(--navy-500));
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 8px 20px rgba(26,35,126,0.35);
+            flex-shrink: 0;
+        }
+        .card h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+        }
+        .card-sub {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin: 4px 0 18px 54px;
+        }
+
+        /* ===== PROGRESS ===== */
+        .progress-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: linear-gradient(135deg, var(--bg-soft), var(--bg));
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 18px;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--indigo-50);
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--navy-500), #5c6bc0, var(--success));
+            background-size: 200% 100%;
+            border-radius: 999px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: shimmer 3s linear infinite;
+        }
+        .progress-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        .quick-fill {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 7px 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--navy-600);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .quick-fill:hover {
+            background: var(--navy-700);
+            color: white;
+            border-color: var(--navy-700);
+            transform: translateY(-1px);
+        }
+
+        /* ===== FORM ===== */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .form-group { margin-bottom: 12px; }
+        .form-group.full { grid-column: 1 / -1; }
+
+        .form-group label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .label-text { display: inline-flex; align-items: center; gap: 6px; }
+        .info-icon {
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            background: var(--indigo-50);
+            color: var(--navy-600);
+            display: inline-grid;
+            place-items: center;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: help;
+            transition: var(--transition);
+        }
+        .info-icon:hover {
+            background: var(--navy-700);
+            color: white;
+            transform: scale(1.15);
+        }
+        .unit-badge {
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 2px 8px;
+            background: var(--indigo-50);
+            color: var(--navy-600);
+            border-radius: 999px;
+            letter-spacing: 0.3px;
+        }
+
+        .input-wrap { position: relative; }
+        .input-wrap .input-icon {
+            position: absolute;
+            left: 12px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--indigo-300);
+            font-size: 14px;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 14px 12px 40px;
+            border: 1.5px solid var(--border);
+            border-radius: 11px;
+            font-size: 14px;
+            font-weight: 500;
+            background: var(--bg);
+            color: var(--text);
+            font-family: inherit;
+            transition: var(--transition);
+        }
+        .form-group select { padding-left: 14px; }
+        .form-group input::placeholder { color: var(--text-soft); font-weight: 400; }
+
+        .form-group input:hover,
+        .form-group select:hover {
+            border-color: var(--indigo-300);
+            background: var(--surface);
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--navy-500);
+            background: var(--surface);
+            box-shadow: var(--shadow-glow);
+        }
+        .input-wrap:focus-within .input-icon { color: var(--navy-700); }
+
+        /* Range slider sinkron dengan input */
+        .range-input {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 4px;
+            margin-top: 8px;
+            background: var(--indigo-50);
+            border-radius: 999px;
+            outline: none;
+            transition: var(--transition);
+        }
+        .range-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid var(--navy-500);
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(26,35,126,0.3);
+            transition: transform 0.15s;
+        }
+        .range-input::-webkit-slider-thumb:hover { transform: scale(1.25); }
+        .range-input::-moz-range-thumb {
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid var(--navy-500);
+            cursor: pointer;
+        }
+
+        /* ===== BUTTONS ===== */
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 22px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary {
+            flex: 1;
+            background: linear-gradient(135deg, var(--navy-700), var(--navy-500));
+            color: white;
+            box-shadow: 0 12px 28px rgba(26,35,126,0.34);
+        }
+        .btn-primary::after {
+            content: "";
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            transition: left 0.6s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 36px rgba(26,35,126,0.45);
+        }
+        .btn-primary:hover::after { left: 100%; }
+        .btn-primary:active { transform: translateY(0); }
+
+        .btn-ghost {
+            background: var(--bg-soft);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover {
+            background: var(--indigo-50);
+            color: var(--navy-700);
+            transform: translateY(-2px);
+        }
+
+        .btn .spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+        .btn.is-loading .spinner { display: inline-block; }
+        .btn.is-loading .btn-label { opacity: 0.7; }
+
+        /* ===== ERROR ===== */
+        .error-box {
+            display: flex;
+            gap: 10px;
+            background: var(--danger-bg);
+            color: var(--danger-fg);
+            border-left: 4px solid var(--danger-fg);
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            animation: shake 0.45s ease;
+        }
+
+        /* ===== RESULT PANEL ===== */
+        .price-card {
+            position: relative;
+            background:
+                radial-gradient(800px 240px at 0% 0%, rgba(121,134,203,0.4), transparent 60%),
+                linear-gradient(135deg, var(--navy-900), var(--navy-600));
+            color: white;
+            padding: 32px 28px;
+            border-radius: 18px;
+            margin-bottom: 22px;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+        .price-card::before {
+            content: "";
+            position: absolute;
+            top: -40%; right: -20%;
+            width: 280px; height: 280px;
+            background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 60%);
+            border-radius: 50%;
+        }
+        .price-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.85);
+            text-transform: uppercase;
+            background: rgba(255,255,255,0.12);
+            padding: 5px 12px;
+            border-radius: 999px;
+        }
+        .price-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            margin-top: 12px;
+            line-height: 1.1;
+            font-variant-numeric: tabular-nums;
+        }
+        .price-note {
+            margin-top: 10px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.72);
+        }
+        .price-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 999px;
+            margin-top: 10px;
+        }
+        .price-trend.up   { background: rgba(74,222,128,0.18); color: #86efac; }
+        .price-trend.down { background: rgba(248,113,113,0.18); color: #fca5a5; }
+
+        .summary-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--surface);
+        }
+        .summary-table tr { transition: background var(--transition); }
+        .summary-table tr:hover { background: var(--bg-soft); }
+        .summary-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        .summary-table tr:last-child td { border-bottom: none; }
+        .summary-table td:first-child { color: var(--text-muted); font-weight: 500; }
+        .summary-table td:last-child {
+            text-align: right;
+            color: var(--text);
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 56px 24px;
+            background: linear-gradient(180deg, var(--bg-soft), var(--surface));
+            border: 1.5px dashed var(--indigo-100);
+            border-radius: 16px;
+            color: var(--text-muted);
+        }
+        .empty-illu {
+            width: 88px; height: 88px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--indigo-50), var(--indigo-100));
+            display: grid; place-items: center;
+            font-size: 38px;
+            color: var(--navy-600);
+            animation: float 3s ease-in-out infinite;
+            position: relative;
+        }
+        .empty-illu::after {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px dashed var(--indigo-200);
+            animation: spin 18s linear infinite;
+        }
+        .empty-state h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text);
+            font-size: 17px;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+        .empty-state p {
+            font-size: 14px;
+            max-width: 340px;
+            margin: 0 auto;
+        }
+
+        /* ===== CREDIT ===== */
+        .credit {
+            margin-top: 22px;
+            padding: 18px 20px;
+            background: linear-gradient(135deg, #e3f2fd, #f0f4ff);
+            border-radius: 14px;
+            border-left: 4px solid var(--navy-700);
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+        .credit-avatar {
+            width: 46px; height: 46px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--navy-700), var(--navy-500));
+            color: white;
+            display: grid; place-items: center;
+            font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            box-shadow: 0 6px 14px rgba(26,35,126,0.3);
+            flex-shrink: 0;
+        }
+        .credit-meta { font-size: 13px; line-height: 1.55; }
+        .credit-meta .credit-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+        }
+        .credit-meta .credit-name {
+            font-weight: 700;
+            color: var(--text);
+            font-size: 14px;
+        }
+        .credit-meta .credit-nim { color: var(--text-muted); font-size: 13px; }
+
+        /* ===== LIVE BADGE ===== */
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            padding: 3px 10px;
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            color: white;
+            border-radius: 999px;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+        .live-dot {
+            width: 6px; height: 6px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.4s infinite;
+        }
+        .price-value.is-updating { opacity: 0.55; transition: opacity 0.15s; }
+        .price-value.flash { animation: flash 0.5s ease; }
+
+        /* ===== TOAST ===== */
+        .toast-stack {
+            position: fixed;
+            top: 80px; right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+            pointer-events: none;
+        }
+        .toast {
+            pointer-events: auto;
+            min-width: 260px;
+            padding: 12px 16px;
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            border-left: 4px solid var(--navy-500);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger-fg); }
+        .toast .toast-ico { font-size: 18px; }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            padding: 30px 24px 40px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+        .footer a { color: var(--navy-600); text-decoration: none; font-weight: 600; }
+        [data-theme="dark"] .footer a { color: var(--indigo-200); }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes float {
+            0%,100% { transform: translateY(0); }
+            50%     { transform: translateY(-10px); }
+        }
+        @keyframes pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(74,222,128,0.6); }
+            70%  { box-shadow: 0 0 0 10px rgba(74,222,128,0); }
+            100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+        }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25%     { transform: translateX(-5px); }
+            75%     { transform: translateX(5px); }
+        }
+        @keyframes flash {
+            0%   { transform: scale(1); }
+            40%  { transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
+        @keyframes shimmer {
+            0%   { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        @media (max-width: 980px) {
+            .grid { grid-template-columns: 1fr; }
+            .card.right { position: static; }
+            .form-row { grid-template-columns: 1fr; }
+            .hero { padding-bottom: 110px; }
+            .main { margin-top: -90px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ====== NAV ====== -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="/" class="logo">
+                <span class="logo-mark">🚗</span>
+                <span>CarPrice <span style="color: var(--text-muted); font-weight:500;">AI</span></span>
+            </a>
+            <div class="nav-actions">
+                <button class="icon-btn" id="themeToggle" title="Toggle dark mode" aria-label="Toggle theme">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ====== HERO ====== -->
+    <section class="hero">
+        <div id="tsparticles"></div>
+        <div class="hero-inner">
+            <div class="brand" data-aos="fade-down" data-aos-duration="600">
+                <span class="brand-dot"></span>
+                CarPrice AI · Live Machine Learning Prediction
+            </div>
+            <h1 data-aos="fade-up" data-aos-delay="100">
+                Estimasi <span class="accent">harga mobil</span> secara<br/>
+                instan dan akurat dengan AI.
+            </h1>
+            <p class="subtitle" data-aos="fade-up" data-aos-delay="200">
+                Masukkan spesifikasi kendaraan dan dapatkan perkiraan harga pasar real-time.
+                Didukung pipeline scikit-learn yang ter-validasi secara saintifik.
+            </p>
+            <div class="stats" data-aos="fade-up" data-aos-delay="300">
+                <span class="stat-pill">⚡ Real-time Inference</span>
+                <span class="stat-pill">🧠 Linear Regression Pipeline</span>
+                <span class="stat-pill">📊 11 Fitur Input</span>
+                <span class="stat-pill">💵 Output dalam USD</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== MAIN ====== -->
+    <main class="main">
+        <div class="grid">
+            <!-- ====== LEFT: FORM ====== -->
+            <section class="card left" data-aos="fade-up">
+                <div class="card-header">
+                    <div class="card-icon">🚗</div>
+                    <h2>Spesifikasi Kendaraan</h2>
+                </div>
+                <p class="card-sub">Isi data berikut. Hasil akan otomatis muncul saat Anda mengetik.</p>
+
+                <div class="progress-row">
+                    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                    <div class="progress-label" id="progressLabel">0 / 11</div>
+                    <button type="button" class="quick-fill" id="fillAvg" title="Isi otomatis dengan nilai rata-rata">✨ Isi rata-rata</button>
+                </div>
+
+                {% if error %}
+                <div class="error-box" role="alert">
+                    <span>⚠️</span><span>{{ error }}</span>
+                </div>
+                {% endif %}
+
+                <form action="/predict" method="POST" autocomplete="off" id="predictForm">
+                    <div class="form-row">
+                        {% set fields = [
+                            ('Sales_in_thousands', 'Jumlah Penjualan', 'ribuan unit', '📈', '0.01', 0.11, 540.56, 53.0,    'Volume penjualan tahunan dalam ribuan unit. Contoh: 53 berarti 53.000 unit terjual.'),
+                            ('Engine_size',        'Ukuran Mesin',     'Liter',       '⚙️', '0.1',  1.0,  8.0,    3.06,   'Kapasitas mesin dalam liter. Mobil kecil ~1.5L, SUV besar 4-6L.'),
+                            ('Horsepower',         'Tenaga Kuda',      'HP',          '🐎', '1',    55,   450,    185.95, 'Daya keluaran mesin dalam horsepower (HP).'),
+                            ('Wheelbase',          'Wheelbase',        'inch',        '📏', '0.1',  92.6, 138.7,  107.49, 'Jarak antara sumbu roda depan dan belakang.'),
+                            ('Width',              'Lebar Kendaraan',  'inch',        '↔️', '0.1',  62.6, 79.9,   71.15,  'Lebar kendaraan dalam inci.'),
+                            ('Length',             'Panjang Kendaraan','inch',        '📐', '0.1',  149.4,224.5,  187.34, 'Panjang total kendaraan dalam inci.'),
+                            ('Curb_weight',        'Berat Kendaraan',  'ton',         '⚖️', '0.01', 1.9,  5.57,   3.38,   'Berat kosong kendaraan dalam ton metrik.'),
+                            ('Fuel_capacity',      'Kapasitas Tangki', 'gallon',      '⛽', '0.1',  10.3, 32.0,   17.95,  'Kapasitas tangki bahan bakar dalam US gallon.'),
+                            ('Fuel_efficiency',    'Efisiensi BBM',    'MPG',         '🌿', '0.1',  15,   45,     23.84,  'Konsumsi BBM, makin tinggi makin irit (Miles Per Gallon).'),
+                            ('Power_perf_factor',  'Power Perf. Factor','index',      '⚡', '0.01', 23.28,188.14, 77.04,  'Indeks komposit performa daya kendaraan.')
+                        ] %}
+                        {% for fid, flabel, funit, ficon, fstep, fmin, fmax, favg, fhint in fields %}
+                        <div class="form-group">
+                            <label for="{{ fid }}">
+                                <span class="label-text">
+                                    {{ flabel }}
+                                    <span class="info-icon" data-tippy-content="{{ fhint }}">i</span>
+                                </span>
+                                <span class="unit-badge">{{ funit }}</span>
+                            </label>
+                            <div class="input-wrap">
+                                <input type="number" step="{{ fstep }}" name="{{ fid }}" id="{{ fid }}"
+                                       data-min="{{ fmin }}" data-max="{{ fmax }}" data-avg="{{ favg }}"
+                                       placeholder="rata-rata: {{ favg }}"
+                                       value="{{ input_data[fid] if input_data and fid in input_data else '' }}" required />
+                                <span class="input-icon">{{ ficon }}</span>
+                            </div>
+                            <input type="range" class="range-input" data-target="{{ fid }}"
+                                   min="{{ fmin }}" max="{{ fmax }}" step="{{ fstep }}"
+                                   value="{{ input_data[fid] if input_data and fid in input_data else favg }}" />
+                        </div>
+                        {% endfor %}
+
+                        <div class="form-group full">
+                            <label for="Vehicle_type">
+                                <span class="label-text">
+                                    Jenis Kendaraan
+                                    <span class="info-icon" data-tippy-content="Pilih kategori kendaraan: Car (mobil) atau Passenger.">i</span>
+                                </span>
+                                <span class="unit-badge">kategori</span>
+                            </label>
+                            <select name="Vehicle_type" id="Vehicle_type" required>
+                                <option value="" disabled {% if not input_data %}selected{% endif %}>-- Pilih Jenis Kendaraan --</option>
+                                <option value="Car" {% if input_data and input_data.Vehicle_type == 'Car' %}selected{% endif %}>🚗 Car</option>
+                                <option value="Passenger" {% if input_data and input_data.Vehicle_type == 'Passenger' %}selected{% endif %}>🚙 Passenger</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <span class="spinner"></span>
+                            <span class="btn-label">🔍 Hitung Harga Mobil</span>
+                        </button>
+                        <button type="reset" class="btn btn-ghost" title="Reset form">↺ Reset</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- ====== RIGHT: RESULT ====== -->
+            <aside class="card right" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-header">
+                    <div class="card-icon">💰</div>
+                    <h2>
+                        Hasil Prediksi
+                        <span id="liveBadge" class="live-badge" style="display:none;">
+                            <span class="live-dot"></span> LIVE
+                        </span>
+                    </h2>
+                </div>
+                <p class="card-sub">Estimasi harga otomatis diperbarui saat Anda mengubah input.</p>
+
+                <div id="resultPanel" {% if harga_prediksi is none %}style="display:none;"{% endif %}>
+                    <div class="price-card" id="priceCard" data-tilt data-tilt-max="6" data-tilt-glare data-tilt-max-glare="0.15">
+                        <span class="price-label">💎 Estimasi Harga</span>
+                        <div class="price-value" id="priceValue"
+                             data-target="{{ harga_prediksi if harga_prediksi is not none else 0 }}">$0.00</div>
+                        <div class="price-note">Nilai dalam US Dollar (USD) berdasarkan model regresi.</div>
+                        <div class="price-trend" id="priceTrend" style="display:none;">
+                            <span id="trendIcon">▲</span>
+                            <span id="trendText">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-title">📋 Ringkasan Input</div>
+                    <table class="summary-table">
+                        <tbody id="summaryBody"></tbody>
+                    </table>
+                </div>
+
+                <div id="emptyState" {% if harga_prediksi is not none %}style="display:none;"{% endif %} class="empty-state">
+                    <div class="empty-illu">🚙</div>
+                    <h3>Belum ada prediksi</h3>
+                    <p>Lengkapi spesifikasi mobil di sebelah kiri — hasilnya akan muncul otomatis di sini.</p>
+                </div>
+
+                <div class="credit">
+                    <div class="credit-avatar">JA</div>
+                    <div class="credit-meta">
+                        <div class="credit-title">Sistem ini dibuat oleh</div>
+                        <div class="credit-name">Jeni Adi Hidayat</div>
+                        <div class="credit-nim">NIM · 237006158</div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="footer">
+        © 2026 <a href="/">CarPrice AI</a> · Built with Flask, scikit-learn, and ❤️
+    </footer>
+
+    <div class="toast-stack" id="toastStack"></div>
+
+    <!-- ====== LIBRARIES ====== -->
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/slim@3/tsparticles.slim.bundle.min.js"></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <script>
+    /* ============= CONFIG ============= */
+    const LABEL_MAP = {
+        'Sales_in_thousands': 'Jumlah Penjualan (ribuan unit)',
+        'Engine_size': 'Ukuran Mesin (Liter)',
+        'Horsepower': 'Tenaga Kuda / Horsepower (HP)',
+        'Wheelbase': 'Wheelbase (inch)',
+        'Width': 'Lebar Kendaraan (inch)',
+        'Length': 'Panjang Kendaraan (inch)',
+        'Curb_weight': 'Berat Kendaraan (ton)',
+        'Fuel_capacity': 'Kapasitas Tangki (gallon)',
+        'Fuel_efficiency': 'Efisiensi BBM (MPG)',
+        'Power_perf_factor': 'Power Performance Factor',
+        'Vehicle_type': 'Jenis Kendaraan',
+    };
+    const NUM_FIELDS = ['Sales_in_thousands','Engine_size','Horsepower','Wheelbase','Width','Length','Curb_weight','Fuel_capacity','Fuel_efficiency','Power_perf_factor'];
+    const ALL_FIELDS = [...NUM_FIELDS, 'Vehicle_type'];
+
+    /* ============= AOS ============= */
+    AOS.init({ once: true, duration: 700, easing: 'ease-out-cubic', offset: 60 });
+
+    /* ============= TIPPY TOOLTIPS ============= */
+    if (window.tippy) {
+        tippy('[data-tippy-content]', {
+            animation: 'scale',
+            theme: 'light-border',
+            maxWidth: 280,
+            allowHTML: false,
+        });
+    }
+
+    /* ============= TSPARTICLES ============= */
+    if (window.tsParticles) {
+        tsParticles.load('tsparticles', {
+            fpsLimit: 60,
+            background: { color: 'transparent' },
+            particles: {
+                number: { value: 50, density: { enable: true, area: 900 } },
+                color: { value: ['#a5b4fc', '#c7d2fe', '#ffffff'] },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, animation: { enable: true, speed: 1, minimumValue: 0.1 } },
+                size: { value: { min: 1, max: 3 } },
+                move: { enable: true, speed: 0.6, outModes: 'out' },
+                links: { enable: true, distance: 130, color: '#a5b4fc', opacity: 0.25, width: 1 }
+            },
+            interactivity: {
+                events: { onHover: { enable: true, mode: 'grab' }, resize: true },
+                modes: { grab: { distance: 140, links: { opacity: 0.5 } } }
+            },
+            detectRetina: true,
+        });
+    }
+
+    /* ============= TILT ============= */
+    if (window.VanillaTilt) {
+        VanillaTilt.init(document.querySelectorAll('[data-tilt]'), {
+            max: 6, speed: 600, glare: true, 'max-glare': 0.15
+        });
+    }
+
+    /* ============= THEME TOGGLE ============= */
+    const themeBtn = document.getElementById('themeToggle');
+    const root = document.documentElement;
+    const savedTheme = localStorage.getItem('cp-theme');
+    if (savedTheme === 'dark') { root.setAttribute('data-theme', 'dark'); themeBtn.textContent = '☀️'; }
+    themeBtn.addEventListener('click', () => {
+        const isDark = root.getAttribute('data-theme') === 'dark';
+        if (isDark) { root.removeAttribute('data-theme'); themeBtn.textContent = '🌙'; localStorage.setItem('cp-theme', 'light'); }
+        else { root.setAttribute('data-theme', 'dark'); themeBtn.textContent = '☀️'; localStorage.setItem('cp-theme', 'dark'); }
+    });
+
+    /* ============= TOASTS ============= */
+    const toastStack = document.getElementById('toastStack');
+    function toast(msg, type = 'info', dur = 3000) {
+        const ico = type === 'success' ? '✅' : type === 'error' ? '⚠️' : 'ℹ️';
+        const el = document.createElement('div');
+        el.className = `toast ${type}`;
+        el.innerHTML = `<span class="toast-ico">${ico}</span><span>${msg}</span>`;
+        toastStack.appendChild(el);
+        requestAnimationFrame(() => el.classList.add('show'));
+        setTimeout(() => {
+            el.classList.remove('show');
+            setTimeout(() => el.remove(), 400);
+        }, dur);
+    }
+
+    /* ============= FORM PROGRESS ============= */
+    const progressFill = document.getElementById('progressFill');
+    const progressLabel = document.getElementById('progressLabel');
+    function updateProgress() {
+        let filled = 0;
+        for (const f of ALL_FIELDS) {
+            const el = document.getElementById(f);
+            if (el && el.value !== '' && el.value !== null) filled++;
+        }
+        const pct = (filled / ALL_FIELDS.length) * 100;
+        progressFill.style.width = `${pct}%`;
+        progressLabel.textContent = `${filled} / ${ALL_FIELDS.length}`;
+    }
+
+    /* ============= RANGE <-> INPUT SYNC ============= */
+    document.querySelectorAll('.range-input').forEach(range => {
+        const targetId = range.dataset.target;
+        const input = document.getElementById(targetId);
+        if (!input) return;
+        // Sinkronisasi awal
+        if (input.value) range.value = input.value;
+        range.addEventListener('input', () => {
+            input.value = range.value;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+        input.addEventListener('input', () => {
+            if (input.value !== '') range.value = input.value;
+        });
+    });
+
+    /* ============= FILL AVERAGE ============= */
+    document.getElementById('fillAvg').addEventListener('click', () => {
+        NUM_FIELDS.forEach(fid => {
+            const el = document.getElementById(fid);
+            if (!el) return;
+            el.value = el.dataset.avg;
+            const range = document.querySelector(`.range-input[data-target="${fid}"]`);
+            if (range) range.value = el.dataset.avg;
+        });
+        const sel = document.getElementById('Vehicle_type');
+        if (sel && !sel.value) sel.value = 'Car';
+        updateProgress();
+        scheduleLivePredict();
+        toast('Form diisi dengan nilai rata-rata', 'success');
+    });
+
+    /* ============= LIVE PREDICTION ============= */
+    const form = document.getElementById('predictForm');
+    const btn = document.getElementById('submitBtn');
+    const priceEl = document.getElementById('priceValue');
+    const resultPanel = document.getElementById('resultPanel');
+    const emptyState = document.getElementById('emptyState');
+    const summaryBody = document.getElementById('summaryBody');
+    const liveBadge = document.getElementById('liveBadge');
+    const priceTrend = document.getElementById('priceTrend');
+    const trendIcon = document.getElementById('trendIcon');
+    const trendText = document.getElementById('trendText');
+
+    const fmtUSD = new Intl.NumberFormat('en-US', {
+        style: 'currency', currency: 'USD',
+        minimumFractionDigits: 2, maximumFractionDigits: 2
+    });
+
+    let animFrame = null;
+    let currentValue = 0;
+    let lastValue = null;
+    let hasShownConfetti = false;
+
+    function animatePrice(to, duration = 700) {
+        if (animFrame) cancelAnimationFrame(animFrame);
+        const from = currentValue;
+        const start = performance.now();
+        function tick(now) {
+            const t = Math.min(1, (now - start) / duration);
+            const eased = 1 - Math.pow(1 - t, 3);
+            const v = from + (to - from) * eased;
+            priceEl.textContent = fmtUSD.format(v);
+            if (t < 1) animFrame = requestAnimationFrame(tick);
+            else { currentValue = to; animFrame = null; }
+        }
+        animFrame = requestAnimationFrame(tick);
+    }
+
+    function updateTrend(newVal) {
+        if (lastValue === null || lastValue === 0) {
+            priceTrend.style.display = 'none';
+        } else {
+            const diff = newVal - lastValue;
+            const pct = (diff / Math.abs(lastValue)) * 100;
+            if (Math.abs(pct) < 0.05) {
+                priceTrend.style.display = 'none';
+            } else {
+                priceTrend.style.display = 'inline-flex';
+                priceTrend.classList.toggle('up', diff > 0);
+                priceTrend.classList.toggle('down', diff < 0);
+                trendIcon.textContent = diff > 0 ? '▲' : '▼';
+                trendText.textContent = `${diff > 0 ? '+' : ''}${pct.toFixed(2)}% vs sebelumnya`;
+            }
+        }
+        lastValue = newVal;
+    }
+
+    function renderSummary(data) {
+        const rows = Object.entries(data).map(([k, v]) =>
+            `<tr><td>${LABEL_MAP[k] || k}</td><td>${v}</td></tr>`
+        );
+        summaryBody.innerHTML = rows.join('');
+    }
+
+    function showResult() {
+        if (resultPanel.style.display === 'none') {
+            resultPanel.style.display = '';
+            emptyState.style.display = 'none';
+            liveBadge.style.display = 'inline-flex';
+        }
+    }
+
+    function fireConfetti() {
+        if (!window.confetti || hasShownConfetti) return;
+        hasShownConfetti = true;
+        const colors = ['#1a237e', '#3949ab', '#7986cb', '#c5cae9', '#ffffff'];
+        confetti({ particleCount: 80, spread: 70, origin: { y: 0.35 }, colors });
+        setTimeout(() => confetti({ particleCount: 50, spread: 100, origin: { x: 0.2, y: 0.4 }, colors }), 200);
+        setTimeout(() => confetti({ particleCount: 50, spread: 100, origin: { x: 0.8, y: 0.4 }, colors }), 350);
+    }
+
+    function collectPayload() {
+        const data = {};
+        for (const f of ALL_FIELDS) {
+            const el = document.getElementById(f);
+            if (!el) return null;
+            const v = el.value;
+            if (v === '' || v === null) return null;
+            data[f] = v;
+        }
+        return data;
+    }
+
+    let debounceTimer = null;
+    let inflight = null;
+    async function livePredict() {
+        const payload = collectPayload();
+        if (!payload) return;
+        priceEl.classList.add('is-updating');
+        try {
+            if (inflight) inflight.abort();
+            inflight = new AbortController();
+            const res = await fetch('/api/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+                signal: inflight.signal,
+            });
+            const json = await res.json();
+            if (!json.success) return;
+            const wasEmpty = resultPanel.style.display === 'none';
+            showResult();
+            renderSummary(json.input_data);
+            updateTrend(json.harga_prediksi);
+            animatePrice(json.harga_prediksi, 600);
+            priceEl.classList.remove('flash');
+            void priceEl.offsetWidth;
+            priceEl.classList.add('flash');
+            if (wasEmpty) {
+                fireConfetti();
+                toast('Prediksi berhasil dihitung', 'success');
+            }
+        } catch (err) {
+            if (err.name !== 'AbortError') console.error(err);
+        } finally {
+            priceEl.classList.remove('is-updating');
+        }
+    }
+
+    function scheduleLivePredict() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(livePredict, 280);
+    }
+
+    /* attach listeners */
+    ALL_FIELDS.forEach(f => {
+        const el = document.getElementById(f);
+        if (!el) return;
+        el.addEventListener('input', () => { updateProgress(); scheduleLivePredict(); });
+        el.addEventListener('change', () => { updateProgress(); scheduleLivePredict(); });
+    });
+
+    /* loading state on form submit (fallback) */
+    if (form && btn) {
+        form.addEventListener('submit', () => {
+            btn.classList.add('is-loading');
+            const lbl = btn.querySelector('.btn-label');
+            if (lbl) lbl.textContent = 'Menghitung...';
+        });
+    }
+
+    /* reset */
+    if (form) {
+        form.addEventListener('reset', () => {
+            setTimeout(() => {
+                resultPanel.style.display = 'none';
+                emptyState.style.display = '';
+                liveBadge.style.display = 'none';
+                priceEl.textContent = '$0.00';
+                currentValue = 0;
+                lastValue = null;
+                hasShownConfetti = false;
+                priceTrend.style.display = 'none';
+                document.querySelectorAll('.range-input').forEach(r => {
+                    const input = document.getElementById(r.dataset.target);
+                    if (input && input.dataset.avg) r.value = input.dataset.avg;
+                });
+                updateProgress();
+                toast('Form telah direset', 'info', 2000);
+            }, 0);
+        });
+    }
+
+    /* keyboard shortcut: Ctrl/Cmd + Enter to submit */
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            livePredict();
+            toast('Prediksi diperbarui (Ctrl+Enter)', 'info', 1800);
+        }
+    });
+
+    /* ============= INIT ============= */
+    updateProgress();
+    if (priceEl) {
+        const initial = parseFloat(priceEl.dataset.target || '0');
+        if (initial > 0) {
+            currentValue = 0;
+            animatePrice(initial, 1100);
+            lastValue = initial;
+        }
+    }
+    if (collectPayload()) setTimeout(livePredict, 250);
+    </script>
+</body>
+</html>
